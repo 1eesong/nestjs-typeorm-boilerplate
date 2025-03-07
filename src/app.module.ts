@@ -10,27 +10,16 @@ import { DbConfigService } from './config/db/config.service';
 import { join } from 'path';
 import { AppConfigModule } from './config/app/config.module';
 import { S3Module } from './modules/s3/s3.module';
+import { PostsModule } from './modules/posts/posts.module';
+import { AppDataSource } from 'ormconfig';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
-      imports: [DbConfigModule, AppConfigModule],
-      useFactory: (configService: DbConfigService) => ({
-        type: 'postgres',
-        host: configService.dbHost,
-        port: configService.dbPort,
-        username: configService.dbUser,
-        password: configService.dbPassword,
-        database: configService.dbName,
-        entities: [join(__dirname, '/**/*.entity.{ts,js}')],
-        migrations: [join(__dirname, './migrations/**/*{.ts,.js}')],
-        synchronize: configService.nodeEnv === 'dev',
-      }),
-      inject: [DbConfigService],
-    }),
+    TypeOrmModule.forRoot(AppDataSource.options),
     AuthModule,
     UsersModule,
     S3Module,
+    PostsModule,
     // DbConfigModule,
     // AppConfigModule,
     // AwsConfigModule,
